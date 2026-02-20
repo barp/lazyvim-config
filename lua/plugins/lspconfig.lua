@@ -25,6 +25,10 @@ return {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id)
           if client and client.name == "gopls" then
+            -- Enable inlay hints (escape analysis, type hints, etc.)
+            if client.server_capabilities.inlayHintProvider then
+              vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+            end
             if client.server_capabilities.codeLensProvider then
               vim.lsp.codelens.refresh()
               -- Auto-refresh codelens on buffer changes
@@ -53,6 +57,15 @@ return {
                 shadow = true,
               },
               staticcheck = true,
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
               codelenses = {
                 gc_details = true, -- Show heap escape analysis
                 generate = true,
